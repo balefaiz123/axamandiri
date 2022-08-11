@@ -16,13 +16,12 @@ import javax.inject.Inject
 class DataViewModel @Inject constructor(
     application: Application,
     val useCase: DataUseCase
-) : AndroidViewModel(application)
-{
+) : AndroidViewModel(application) {
 
     val data = MutableLiveData<ArrayList<DataResponseItem>>()
     val search = MutableLiveData<String>()
 
-    fun loadData(){
+    fun loadData() {
         viewModelScope.launch {
             useCase.invoke().collect {
                 data.postValue(it)
@@ -30,8 +29,21 @@ class DataViewModel @Inject constructor(
         }
     }
 
-//    fun filter(filter: String): List<DataResponseItem> = data.value?.let {
-//        it.filter {  }
+    fun filter(q: String): List<DataResponseItem> {
+        return data.value?.let {
+            it.orEmpty().filter { data ->
+                data.title.contains(q, true)
+            }
+        } ?: run {
+            arrayListOf()
+        }
+    }
+
+//    fun filter(data: ArrayList<DataResponseItem>, search: String): List<DataResponseItem> {
+//        return data.orEmpty().filter {
+//            it.title.contains(search, true)
+//        }
+//
 //    }
 
 
